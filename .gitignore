@@ -1,0 +1,10 @@
+data/
+__pycache__/
+dist/
+views/
+.resume
+.claude/settings.local.json
+# Local-only files, documented in private/README.md
+private/
+bundle/
+package.sh

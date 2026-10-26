@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Clay Embedding Explorer</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="style.css" />
+    <script type="module" src="https://js.arcgis.com/5.1/"></script>
+    <script type="module" src="app.js"></script>
+  </head>
+  <body class="calcite-mode-dark">
+    <arcgis-map>
+      <arcgis-zoom slot="bottom-right"></arcgis-zoom>
+    </arcgis-map>
+
+    <aside class="panel" aria-label="Embedding explorer">
+      <header>
+        <div class="help-control">
+          <h1 id="title">Clay embeddings</h1>
+          <calcite-action id="map-help" class="help-button" scale="s" data-help="map" label="Help for the map" title="Help for the map" icon="question" text="Help"></calcite-action>
+        </div>
+        <p id="subtitle" class="muted">Loading…</p>
+      </header>
+
+      <div class="help-control">
+        <calcite-segmented-control id="mode" width="full" scale="m">
+          <calcite-segmented-control-item value="pca" checked>Spectrum</calcite-segmented-control-item>
+          <calcite-segmented-control-item value="similar">Similar</calcite-segmented-control-item>
+          <calcite-segmented-control-item value="clusters">Clusters</calcite-segmented-control-item>
+        </calcite-segmented-control>
+        <calcite-action class="help-button" scale="s" data-help="mode" label="Help for the selected view" title="Help for the selected view" icon="question" text="Help"></calcite-action>
+      </div>
+
+      <section data-mode="pca">
+        <p>Spectrum shows three patterns in the chip embeddings. Each pattern controls one colour channel. Similar colours indicate similar embeddings.</p>
+        <p id="pca-variance" class="muted"></p>
+      </section>
+
+      <section data-mode="similar" hidden>
+        <div id="inputs-row" class="help-control">
+          <calcite-segmented-control id="inputs" width="full" scale="s" aria-label="Similarity inputs">
+            <calcite-segmented-control-item value="single" checked>A only</calcite-segmented-control-item>
+            <calcite-segmented-control-item value="pair">A and B</calcite-segmented-control-item>
+          </calcite-segmented-control>
+          <calcite-action class="help-button" scale="s" data-help="inputs" label="Help for the selected input mode" title="Help for the selected input mode" icon="question" text="Help"></calcite-action>
+        </div>
+        <p id="similar-hint">Select a chip on the map. The app lists the closest matches.</p>
+        <div id="vector-controls" hidden>
+          <div class="muted" aria-live="polite">
+            <p id="vector-a"></p>
+            <p id="vector-b"></p>
+          </div>
+          <div id="operation-row" class="help-control">
+            <calcite-segmented-control id="operation" width="full" scale="s" aria-label="Vector operation">
+              <calcite-segmented-control-item value="add" checked>Add A + B</calcite-segmented-control-item>
+              <calcite-segmented-control-item value="subtract">A − B</calcite-segmented-control-item>
+              <calcite-segmented-control-item value="multiply" title="Element-wise multiplication">A × B</calcite-segmented-control-item>
+            </calcite-segmented-control>
+            <calcite-action class="help-button" scale="s" data-help="operation" label="Help for the selected vector operation" title="Help for the selected vector operation" icon="question" text="Help"></calcite-action>
+          </div>
+          <div class="vector-actions">
+            <span id="swap-row" class="help-control">
+              <calcite-button id="swap-vectors" scale="s" appearance="outline" disabled>Swap A/B</calcite-button>
+              <calcite-action class="help-button" scale="s" data-help="swap" label="Help for Swap A/B" title="Help for Swap A/B" icon="question" text="Help"></calcite-action>
+            </span>
+            <span class="help-control">
+              <calcite-button id="clear-vectors" scale="s" appearance="outline">Clear</calcite-button>
+              <calcite-action class="help-button" scale="s" data-help="clear" label="Help for Clear" title="Help for Clear" icon="question" text="Help"></calcite-action>
+            </span>
+          </div>
+          <p id="vector-status" class="muted" role="status"></p>
+        </div>
+        <div id="similar-body" hidden>
+          <div class="help-control">
+            <div>
+              <div class="ramp" aria-hidden="true"></div>
+              <div class="ramp-labels muted"><span id="sim-min"></span><span>cosine similarity</span><span id="sim-max"></span></div>
+            </div>
+            <calcite-action class="help-button" scale="s" data-help="score" label="Help for cosine similarity" title="Help for cosine similarity" icon="question" text="Help"></calcite-action>
+          </div>
+          <div class="help-control list-heading">
+            <h2>Closest chips</h2>
+            <calcite-action class="help-button" scale="s" data-help="matches" label="Help for Closest chips" title="Help for Closest chips" icon="question" text="Help"></calcite-action>
+          </div>
+          <calcite-list id="matches" selection-mode="single" label="Closest chips"></calcite-list>
+        </div>
+      </section>
+
+      <section data-mode="clusters" hidden>
+        <div id="method-row" class="help-control">
+          <calcite-segmented-control id="method" width="full" scale="s">
+            <calcite-segmented-control-item value="kmeans" checked>K-means</calcite-segmented-control-item>
+            <calcite-segmented-control-item value="dbscan">DBSCAN</calcite-segmented-control-item>
+          </calcite-segmented-control>
+          <calcite-action class="help-button" scale="s" data-help="method" label="Help for the selected cluster method" title="Help for the selected cluster method" icon="question" text="Help"></calcite-action>
+        </div>
+        <div data-method="kmeans">
+          <div class="help-control">
+            <calcite-slider id="k" min="2" max="8" step="1" value="5" ticks="1" label-handles label-text="Number of clusters"></calcite-slider>
+            <calcite-action class="help-button" scale="s" data-help="count" label="Help for Number of clusters" title="Help for Number of clusters" icon="question" text="Help"></calcite-action>
+          </div>
+          <p class="muted">K-means assigns each chip to one cluster. A cluster is a group of similar embeddings.</p>
+        </div>
+        <div data-method="dbscan" hidden>
+          <div class="help-control">
+            <calcite-slider id="eps" min="0" max="4" step="1" value="2" ticks="1" label-text="Neighbourhood radius (eps)"></calcite-slider>
+            <calcite-action class="help-button" scale="s" data-help="radius" label="Help for Neighbourhood radius" title="Help for Neighbourhood radius" icon="question" text="Help"></calcite-action>
+          </div>
+          <p id="eps-value" class="muted"></p>
+          <p class="muted">DBSCAN finds dense clusters of similar embeddings. Chips outside these clusters are noise. Noise chips have no colour until you select Noise.</p>
+        </div>
+        <div class="help-control list-heading">
+          <h2>Cluster list</h2>
+          <calcite-action class="help-button" scale="s" data-help="isolate" label="Help for showing one cluster" title="Help for showing one cluster" icon="question" text="Help"></calcite-action>
+        </div>
+        <calcite-list id="clusters" selection-mode="single" label="Clusters"></calcite-list>
+        <p class="muted">Select a cluster to show only that cluster.</p>
+      </section>
+
+      <footer>
+        <div class="help-control">
+          <calcite-slider id="opacity" min="0" max="100" step="5" value="70" label-handles label-text="Overlay opacity (%)"></calcite-slider>
+          <calcite-action class="help-button" scale="s" data-help="opacity" label="Help for Overlay opacity" title="Help for Overlay opacity" icon="question" text="Help"></calcite-action>
+        </div>
+      </footer>
+    </aside>
+    <calcite-popover id="help-popup" label="Application help" reference-element="map-help" heading="Application help" heading-level="2" closable auto-close trigger-disabled overlay-positioning="fixed" placement="auto">
+      <div id="help-content"></div>
+    </calcite-popover>
+  </body>
+</html>

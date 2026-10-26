@@ -1,0 +1,189 @@
+:root {
+  --surface: #1a1a19;
+  --surface-raised: rgb(26 26 25 / 0.92);
+  --text-primary: #f0efec;
+  --text-secondary: #c3c2b7;
+  --line: rgb(240 239 236 / 0.12);
+  font-family: "Avenir Next", Avenir, system-ui, sans-serif;
+  color: var(--text-primary);
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: var(--surface);
+}
+
+arcgis-map {
+  position: absolute;
+  inset: 0;
+}
+
+.panel {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: 380px;
+  max-height: calc(100% - 32px);
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--surface-raised);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+h2 {
+  margin: 16px 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+}
+
+p {
+  margin: 0 0 8px;
+}
+
+.muted {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+section > :last-child {
+  margin-bottom: 0;
+}
+
+footer {
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.ramp {
+  height: 10px;
+  border-radius: 4px;
+  /* Same stops as SIMILAR_RAMP in app.js. */
+  background: linear-gradient(90deg, #b2182b, #8f8e88, #7fcf7a);
+  outline: 1px solid var(--line);
+}
+
+.ramp-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex: none;
+}
+
+@media (max-width: 600px) {
+  .panel {
+    top: auto;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    max-height: 45%;
+  }
+}
+
+#inputs-row,
+#method-row {
+  margin-bottom: 12px;
+}
+
+.vector-actions {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.help-control {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.help-control > :first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.help-control[hidden] {
+  display: none;
+}
+
+.help-button {
+  --help-fade-duration: 180ms;
+  flex: none;
+  transform: translateX(5px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+:root:not([data-keyboard-navigation]) .help-control:hover > .help-button,
+:root[data-keyboard-navigation] .help-control:focus-within > .help-button {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity var(--help-fade-duration) ease;
+}
+
+@media (hover: none) {
+  .help-button {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .help-button {
+    --help-fade-duration: 0ms;
+  }
+}
+
+.list-heading {
+  margin: 12px 0 8px;
+}
+
+.list-heading h2 {
+  margin: 0;
+}
+
+#help-popup {
+  --calcite-popover-max-size-x: min(360px, calc(100vw - 24px));
+}
+
+#help-content {
+  padding: 0 16px 16px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+#help-content ol {
+  margin: 12px 0 0;
+  padding-left: 20px;
+}
+
+#help-content li + li {
+  margin-top: 6px;
+}
